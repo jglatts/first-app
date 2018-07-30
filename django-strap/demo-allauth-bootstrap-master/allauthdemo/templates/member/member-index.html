@@ -1,0 +1,55 @@
+{% extends "bases/bootstrap-member.html" %}
+
+{% load bootstrap3 %}
+
+{% block head_title %}Welcome{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    {% bootstrap_messages %}
+
+    <div class="col-sm-6 col-md-4 col-lg4">
+      <p class="sticky taped2" style="width: 250px;">
+        <strong>Welcome {{ request.user.name }}!</strong><br>
+        At this point, the site has<br />
+        authenticated you and, if you<br />
+        used a social network, retrieved<br />
+        your picture and key bio details<br />
+        such as name.
+      </p>
+    </div>
+    <div class="col-sm-6 col-md-4 col-lg4">
+      <p class="sticky taped2" style="width: 250px;">
+        <strong>Oh Ya {{ request.user.first_name }}!<br></strong>
+        Please excuse our appearance as our site is under construction<br?
+        All of the important stuff is still working!<br />
+        JDG Industrial thanks you<br />
+      </p>
+    </div>
+    <div class="col-sm-6 col-md-4 col-lg4">
+      <p class="sticky taped2" style="width: 250px;">
+        <strong>{{ request.user.get_full_name }},</strong><br>
+        At this point, the site has<br />
+        authenticated you and, if you<br />
+        used a social network, retrieved<br />
+        your picture and key bio details<br />
+        such as name.
+      </p>
+    </div>
+    <div class="col-sm-6 col-md-4 col-lg-4">
+      <h3>Profile</h3>
+      <ul class="list-unstyled">
+        <li>First name: <strong>{{user.first_name}}</strong></li>
+        <li>Last name: <strong>{{user.last_name}}</strong></li>
+        <li>Display name: <strong>{{user.display_name}}</strong></li>
+        <li>Email: <strong>{{user.email}}</strong></li>
+        <li>User Type:{% if request.user.profile.account_verified %}Verified{% else %}Unverified{% endif %}</li>
+      </ul>
+      <a href="{% url 'account_profile' %}">Edit</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
