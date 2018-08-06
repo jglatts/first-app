@@ -120,6 +120,77 @@ class User(AbstractBaseUser, PermissionsMixin):
     def natural_key(self):
         return (self.email,)
 
+    def dr_scrap(self):
+        """ Get the news heading from the middle column @ drudgerp """
+        if self.display_name:
+            pass
+        else:
+            url = "https://www.drudgereport.com"
+            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36'}
+            src = requests.get(url)
+            pln_txt = src.text
+            dasoup = BeautifulSoup(pln_txt, "html.parser")
+            
+            for news in dasoup.find_all("div",{"id":"app_col2"}):
+                tits = news.get_text()
+                return tits
+
+    def mo_scrap(self):
+        """ Another Scrap """
+        if self.display_name:           
+            pass
+        else:
+            url = "https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNRGxqTjNjd0VnSmxiaWdBUAE?hl=en-US&gl=US&ceid=US%3Aen"
+            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36'}
+            src = requests.get(url, headers = headers)
+            pln_txt = src.text
+            dasoup = BeautifulSoup(pln_txt, "html.parser")
+            
+            # Had a hard time extracting data. This loop finds ALOT of articles 
+            # on google news, trying to limit the amount of results. 
+            all_news = dasoup.find_all("main",{"class":"HKt8rc CGNRMc"}, limit=1)
+            for news in all_news:
+                return news.get_text()
+
+    def odd_scrap(self):
+        """ Scrap random gear from odditymall
+            Need to get scrap to display more 
+            then one item on sites
+        """
+        if self.display_name:           
+            pass
+        else:
+            url = "https://www.odditymall.com"
+            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36'}
+            src = requests.get(url, headers = headers)
+            pln_txt = src.text
+            dasoup = BeautifulSoup(pln_txt, "html.parser")
+            
+            # Had a hard time extracting data. This loop finds ALOT of articles 
+            # on google news, trying to limit the amount of results. 
+            all_news = dasoup.find_all("div",{"class":"infinite-scroll"}, limit=1)
+            for news in all_news:
+                return news.get_text()
+
+    def fake_name(self):
+        """ Fun script to generate fake data for webpage """
+        fake = Faker()
+        return fake.name()
+        
+    def fake_ssn(self):
+        """ Fun script to generate fake data for webpage """
+        fake = Faker()
+        return fake.ssn()
+
+    def fake_address(self):
+        """ Fun script to generate fake data for webpage """
+        fake = Faker()
+        return fake.address()
+        
+    def fake_job(self):
+        """ Fun script to generate fake data for webpage """
+        fake = Faker()
+        return fake.job()
 
 @python_2_unicode_compatible
 class UserProfile(models.Model):
