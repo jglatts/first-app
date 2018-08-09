@@ -1,4 +1,7 @@
 import hashlib
+import requests
+import faker
+import psutil
 
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 from django.core.mail import send_mail
@@ -8,12 +11,24 @@ from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _
+from faker import Faker
+from bs4 import BeautifulSoup
+
 
 try:
     from django.utils.encoding import force_text
 except ImportError:
     from django.utils.encoding import force_unicode as force_text
 from allauth.account.signals import user_signed_up
+
+class Question(models.Model):
+    question_text = models.CharField(max_length=200)
+    pub_date = models.DateTimeField('date of pub')
+
+class Choice(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    choice_text = models.CharField(max_length=200)
+    votes = models.IntegerField(default=0)
 
 
 class MyUserManager(UserManager):
@@ -118,7 +133,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.email
 
     def natural_key(self):
-        return (self.email,)
+        return self.email
 
     def dr_scrap(self):
         """ Get the news heading from the middle column @ drudgerp """
@@ -126,7 +141,6 @@ class User(AbstractBaseUser, PermissionsMixin):
             pass
         else:
             url = "https://www.drudgereport.com"
-            # add headers
             headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36'}
             src = requests.get(url)
             pln_txt = src.text
@@ -173,6 +187,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             for news in all_news:
                 return news.get_text()
 
+
     def fake_name(self):
         """ Fun script to generate fake data for webpage """
         fake = Faker()
@@ -192,6 +207,21 @@ class User(AbstractBaseUser, PermissionsMixin):
         """ Fun script to generate fake data for webpage """
         fake = Faker()
         return fake.job()
+
+    def utils_times(self):
+        """ Return some data about user's CPU time """
+        stat = psutil.cpu_times()
+        return stat
+        
+    def utils_users(self):
+        """ Return some data about user's machine """
+        stat = psutil.users()
+        return stat
+
+    def utils_boot(self):
+        """ Return some data about user's machine """
+        stat = psutil.boot_time()
+        return stat
 
 @python_2_unicode_compatible
 class UserProfile(models.Model):
