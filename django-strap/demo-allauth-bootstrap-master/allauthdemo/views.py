@@ -16,3 +16,11 @@ def member_action(request):
     c = {}  #{'foo': 'bar'}
     return HttpResponse(t.render(c, request), content_type='text/html')
 
+
+def index(request):
+    latest_question_list = Question.objects.order_by('-pub_date')[:5]
+    template = loader.get_template('visitor/question1.html')
+    context = {
+        'latest_question_list': latest_question_list,
+    }
+    return HttpResponse(template.render(context, request))
