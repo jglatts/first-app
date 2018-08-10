@@ -18,9 +18,11 @@ from django.contrib import admin
 from django.views.generic import TemplateView
 from django.conf.urls.static import static
 from django.conf import settings
+from django.urls import path
 
 from .auth.views import account_profile
-from .views import member_index, member_action
+from .views import member_index, member_action, index, detail
+from . import views
 
 urlpatterns = [
     # Landing page area
@@ -28,15 +30,22 @@ urlpatterns = [
     url(r'^about$', TemplateView.as_view(template_name='visitor/landing-about.html'), name='landing_about'),
     url(r'^terms/$', TemplateView.as_view(template_name='visitor/terms.html'), name='website_terms'),
     url(r'^contact$', TemplateView.as_view(template_name='visitor/contact.html'), name='website_contact'),
+    url(r'^topics/$', TemplateView.as_view(template_name='visitor/topics.html'), name='website_topics'),
+    url(r'^categories/$', TemplateView.as_view(template_name='visitor/categories.html'), name='website_categories'),
+    url(r'^explore/$', TemplateView.as_view(template_name='visitor/site_explore.html'), name='website_explore'),
+    url(r'^resources/$', TemplateView.as_view(template_name='visitor/resources.html'), name='website_resources'),
+    url(r'^webscrap/$', TemplateView.as_view(template_name='visitor/webscrap.html'), name='webscrap'),
+    url(r'^misc/$', TemplateView.as_view(template_name='visitor/misc.html'), name='misc-scripts'),
 
     # Account management is done by allauth
     url(r'^accounts/', include('allauth.urls')),
 
     # Account profile and member info done locally
-    # Located In Views
+    # Located in views to use models\db
     url(r'^accounts/profile/$', account_profile, name='account_profile'),
-    url(r'^member/$', member_index, name='user_home'),
+    url(r'^question/$', index, name='all_questions'),
     url(r'^member/action$', member_action, name='user_action'),
+    path(r'<int:question_id>/', detail, name='detail'),
 
     # Usual Django admin
     url(r'^admin/', admin.site.urls),
