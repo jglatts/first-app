@@ -36,6 +36,7 @@ urlpatterns = [
     url(r'^resources/$', TemplateView.as_view(template_name='visitor/resources.html'), name='website_resources'),
     url(r'^webscrap/$', TemplateView.as_view(template_name='visitor/webscrap.html'), name='webscrap'),
     url(r'^misc/$', TemplateView.as_view(template_name='visitor/misc.html'), name='misc-scripts'),
+    url(r'^newblog/$', TemplateView.as_view(template_name='visitor/newblog.html'), name='add_new_blog'),
 
     # Account management is done by allauth
     url(r'^accounts/', include('allauth.urls')),
@@ -45,7 +46,10 @@ urlpatterns = [
     url(r'^accounts/profile/$', account_profile, name='account_profile'),
     url(r'^question/$', index, name='all_questions'),
     url(r'^member/action$', member_action, name='user_action'),
-    path(r'<int:question_id>/', detail, name='detail'),
+    
+    # This path WORKS to display choice-question. 
+    path(r'question/<int:question_id>/', detail, name='detail'),
+    path(r'question/<int:question_id>/vote/', views.vote, name='vote'),
 
     # Usual Django admin
     url(r'^admin/', admin.site.urls),
