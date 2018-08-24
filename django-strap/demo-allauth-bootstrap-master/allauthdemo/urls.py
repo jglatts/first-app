@@ -21,7 +21,7 @@ from django.conf import settings
 from django.urls import path
 
 from .auth.views import account_profile
-from .views import member_index, member_action, index, detail
+from .views import member_index, member_action, index, detail, vote, results
 from . import views
 
 urlpatterns = [
@@ -49,7 +49,8 @@ urlpatterns = [
     
     # This path WORKS to display choice-question. 
     path(r'question/<int:question_id>/', detail, name='detail'),
-    path(r'question/<int:question_id>/vote/', views.vote, name='vote'),
+    path(r'question/<int:question_id>/vote/', vote, name='vote'),
+    path(r'question/<int:question_id>/results', results, name='results'),
 
     # Usual Django admin
     url(r'^admin/', admin.site.urls),
