@@ -2,6 +2,7 @@ import hashlib
 import requests
 import faker
 import psutil
+import time 
 
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 from django.core.mail import send_mail
@@ -17,17 +18,25 @@ from bs4 import BeautifulSoup
 
 try:
     from django.utils.encoding import force_text
+
 except ImportError:
     from django.utils.encoding import force_unicode as force_text
 from allauth.account.signals import user_signed_up
 
 class Question(models.Model):
     question_text = models.CharField(max_length=200)
+    author = models.CharField(max_length=200)
     pub_date = models.DateTimeField('date of pub')
+    load_time = psutil.cpu_freq('/')
+      
+
+class BlogText(models.Model):
+    """ Playing with forms. This will help with POST """
+    new_blog = models.CharField(max_length=1200)
 
 class Choice(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    choice_text = models.CharField(max_length=200)
+    choice_text = models.CharField(max_length=900)
     votes = models.IntegerField(default=0)
 
 
@@ -169,8 +178,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def odd_scrap(self):
         """ Scrap random gear from odditymall
-            Need to get scrap to display more 
-            then one item on sites
+            Have to clean scrap up, too much is displayed
         """
         if self.display_name:           
             pass
@@ -181,12 +189,18 @@ class User(AbstractBaseUser, PermissionsMixin):
             pln_txt = src.text
             dasoup = BeautifulSoup(pln_txt, "html.parser")
             
-            # Had a hard time extracting data. This loop finds ALOT of articles 
-            # on google news, trying to limit the amount of results. 
-            all_news = dasoup.find_all("div",{"class":"infinite-scroll"}, limit=1)
+            #Extracting data 
+            all_news = dasoup.find_all("div",{"class":"list-item-inner-cont"})
             for news in all_news:
                 return news.get_text()
 
+    def load_time():
+        # data to display on question page
+        now0 = time.time()
+        now1 = time.time()
+        speed = now1 - now0
+    
+        return speed
 
     def fake_name(self):
         """ Fun script to generate fake data for webpage """
