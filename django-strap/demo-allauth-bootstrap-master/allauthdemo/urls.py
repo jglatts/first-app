@@ -22,6 +22,7 @@ from django.urls import path
 
 from .auth.views import account_profile
 from .views import member_index, member_action, index, detail, vote, results
+from .views import new_blog_post
 from . import views
 
 urlpatterns = [
@@ -36,7 +37,6 @@ urlpatterns = [
     url(r'^resources/$', TemplateView.as_view(template_name='visitor/resources.html'), name='website_resources'),
     url(r'^webscrap/$', TemplateView.as_view(template_name='visitor/webscrap.html'), name='webscrap'),
     url(r'^misc/$', TemplateView.as_view(template_name='visitor/misc.html'), name='misc-scripts'),
-    url(r'^newblog/$', TemplateView.as_view(template_name='visitor/newblog.html'), name='add_new_blog'),
 
     # Account management is done by allauth
     url(r'^accounts/', include('allauth.urls')),
@@ -48,6 +48,7 @@ urlpatterns = [
     url(r'^member/action$', member_action, name='user_action'),
     
     # This path WORKS to display choice-question. 
+    path(r'question/newblog', new_blog_post, name='newblog'),
     path(r'question/<int:question_id>/', detail, name='detail'),
     path(r'question/<int:question_id>/vote/', vote, name='vote'),
     path(r'question/<int:question_id>/results', results, name='results'),
