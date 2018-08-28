@@ -1,8 +1,11 @@
+import datetime
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader, RequestContext
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .auth.models import Question 
+from django.urls import reverse
+from .auth.models import Question, Choice
+from .auth.forms import NewBlog
 
 @login_required
 def member_index(request):
@@ -18,9 +21,9 @@ def member_action(request):
 
 
 def index(request):
-    latest_question_list = Question.objects.order_by('-pub_date')[:5]
-    # only displays ONE entry, have to be able to show ALL entries
-    # for ALL blog posts
+    latest_question_list = Question.objects.order_by('-pub_date')[:15]
+    # Only displays ONE entry, have to be able to show ALL entries
+    # For ALL blog posts. Not in use, somewhat functionaly though 
     question = get_object_or_404(Question, pk=2)
     template = loader.get_template('visitor/question.html')
     context = {
@@ -36,7 +39,17 @@ def detail(request, question_id):
 
 def results(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
-    return render(request, 'polls/results.html', {'question': question})
+    return render(request, 'visitor/results.html', {'question': question})
+
+    if request.method == "POST":
+        if form0.is_valid():
+            post = form0.save(commit=False)
+            post.pub_date = datetime.datetime.now()
+            post.save()
+            return render(request, 'visitor/question.html')
+    else:
+        form = NewBlog()
+    return render(request, 'visitor/newblog.html', {'form': form})
 
 
 def vote(request, question_id):
@@ -45,7 +58,7 @@ def vote(request, question_id):
         selected_choice = question.choice_set.get(pk=request.POST['choice'])
     except (KeyError, Choice.DoesNotExist):
         # Redisplay the question voting form.
-        return render(request, 'polls/detail.html', {
+        return render(request, 'visitor/detail.html', {
             'question': question,
             'error_message': "You didn't select a choice.",
         })
@@ -55,4 +68,18 @@ def vote(request, question_id):
         # Always return an HttpResponseRedirect after successfully dealing
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
-        return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
+        return HttpResponseRedirect(reverse('results', args=(question.id,)))
+
+def new_blog_post(request):
+    if request.method == "POST":
+        form = NewBlog(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            # This handles the 'pub_date'
+            # W/out it, the POST does not work
+            post.pub_date = datetime.datetime.now()
+            post.save()
+            return redirect('all_questions')
+    else:
+        form = NewBlog()
+    return render(request, 'visitor/newblog.html', {'form': form})
